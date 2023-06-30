@@ -1,5 +1,6 @@
 class AuthorsController < ApplicationController
-  
+  rescue_from ActiveRecord::RecordInvalid, with: :author_invalid
+
   def show
     author = Author.find(params[:id])
 
@@ -13,7 +14,11 @@ class AuthorsController < ApplicationController
   end
 
   private
-  
+
+    def author_invalid(invalid)
+    render json: { errors: invalid.record.errors }, status: :unprocessable_entity
+   end
+
   def author_params
     params.permit(:email, :name)
   end
